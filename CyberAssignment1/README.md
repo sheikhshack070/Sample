@@ -405,6 +405,90 @@ These architectural controls directly address previously identified STRIDE threa
 ![Secure Architecture](./SecureDesign.png)
 
 
+# Task 5: Risk Treatment and Residual Risk
+
+All identified threats were initially classified as High risk due to the system handling sensitive financial and personal data.
+
+This section defines how each high-risk threat is treated and explains any residual risk.
+
+---
+
+# Risk Treatment Strategy
+
+Risk handling methods used:
+
+- Mitigate — Implement architectural security controls
+- Transfer — Shift responsibility to trusted third party
+- Accept — Risk remains within acceptable threshold
+- Avoid — Remove functionality to eliminate risk
+
+---
+
+# Risk Treatment Table
+
+| Threat | STRIDE Category | Risk Level | Treatment Strategy | Treatment Decision | Residual Risk |
+|--------|----------------|------------|-------------------|-------------------|---------------|
+
+| Spoofing User Browser | Spoofing | High | Mitigate | Enforce MFA, TLS, token validation | Medium |
+| Spoofing Admin Browser | Spoofing | High | Mitigate | MFA + IP allowlisting + RBAC | Low |
+| Spoofing Auth Service | Spoofing | High | Mitigate | Mutual TLS + token signing | Medium |
+| Spoofing Payment Gateway | Spoofing | High | Mitigate + Transfer | Webhook signature validation + gateway contractual controls | Medium |
+| API Gateway Crash (DoS) | Denial of Service | High | Mitigate | Rate limiting, WAF, autoscaling | Medium |
+| HTTPS Data Interruption | Denial of Service | High | Mitigate | Redundant infrastructure + TLS hardening | Medium |
+| Logging Resource Exhaustion | Denial of Service | High | Mitigate | Log rate limiting + monitoring alerts | Medium |
+| Audit Log Write Denial | Repudiation | High | Mitigate | Append-only immutable logging | Low |
+| Data Flow Sniffing | Information Disclosure | High | Mitigate | End-to-end TLS encryption | Low |
+| Privilege Escalation via API Gateway | Elevation of Privilege | High | Mitigate | Strict RBAC + least privilege enforcement | Medium |
+| Execution Flow Manipulation | Elevation of Privilege | High | Mitigate | Input validation + service authentication | Medium |
+
+---
+
+# Transfer Decisions
+
+Certain risks are partially transferred:
+
+- Payment fraud risk transferred to Payment Gateway provider via contractual SLAs.
+- Infrastructure-level DDoS risks partially transferred to cloud/network provider.
+
+---
+
+# Avoid Decisions
+
+No core business functionality was removed.  
+Payment processing is essential and cannot be avoided.
+
+---
+
+# Accept Decisions
+
+Low-impact residual risks such as minor service interruption within SLA thresholds are accepted due to cost-benefit trade-offs.
+
+---
+
+# Residual Risk Explanation
+
+Even after mitigation:
+
+- Spoofing risk remains due to potential credential phishing.
+- Denial of Service risk remains due to unpredictable large-scale attacks.
+- Insider misuse risk remains despite RBAC and monitoring.
+- Zero-day vulnerabilities cannot be fully eliminated.
+
+Residual risk is reduced from High to Medium or Low through layered architectural controls.
+
+The system adopts a defense-in-depth strategy to ensure that no single control failure results in total compromise.
+
+---
+
+# Final Risk Posture
+
+Initial Risk Level: High (financial system, internet-facing)  
+Post-Treatment Risk Level: Medium  
+
+The remaining risk is considered acceptable within operational and regulatory tolerance thresholds.
+
+
+
 
 
 
