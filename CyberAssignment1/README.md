@@ -198,6 +198,8 @@ Actions must be traceable to a specific identity.
 
 | 24 | Elevation Using Impersonation | Elevation of Privilege | Authentication | Auth Service | Auth service may impersonate other components. | Token misuse and authentication bypass. | High |
 
+---
+
 
 
 
