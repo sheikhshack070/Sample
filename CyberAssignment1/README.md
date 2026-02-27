@@ -164,6 +164,12 @@ Actions must be traceable to a specific identity.
 
 ---
 
+# Task 3: Threat Modelling
+
+## ThreatModelling Diagram
+
+![ThreatModellingDiagram](./ThreatModelling.png)
+
 
 
 
