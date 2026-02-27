@@ -97,3 +97,17 @@ Admin Portal → Admin Service
 Privileged access boundary
 
 Strong authentication and logging required
+
+# 7. Trust Boundaries
+
+1. Internet Boundary (User → Frontend)
+2. Frontend → Backend boundary
+3. Backend → Database boundary
+4. Backend → Payment Gateway boundary
+5. Admin access boundary
+6. Internal service-to-service boundary
+
+Each boundary represents a change in trust level and must be secured.
+
+---
+
