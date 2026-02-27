@@ -192,6 +192,216 @@ Actions must be traceable to a specific identity.
 | 24 | Elevation via Auth Service Impersonation | Elevation of Privilege | Authentication | Auth Service | Authentication bypass | High |
 
 
+# Task 4: Secure architechture design
+
+This section proposes architectural security controls for the Online Payment Processing Application.  
+The controls address previously identified STRIDE threats and are aligned with the required control categories.
+
+---
+
+# 1. Identity and Access Management (IAM)
+
+## Control 1: Centralized Authentication with MFA
+All user and admin authentication must pass through the Auth Service with Multi-Factor Authentication (MFA) for administrative accounts.
+
+**Justification:**  
+Mitigates spoofing and credential theft threats. Reduces risk of admin account compromise.
+
+---
+
+## Control 2: Role-Based Access Control (RBAC)
+Enforce strict RBAC policies for:
+- Users
+- Merchants
+- Admins
+
+Admin roles must be isolated from user roles.
+
+**Justification:**  
+Prevents elevation of privilege and unauthorized data access.
+
+---
+
+## Control 3: Token-Based Authentication (Short-Lived JWTs)
+Use signed, short-lived access tokens with refresh tokens.
+
+**Justification:**  
+Reduces replay attack and token misuse risk.
+
+---
+
+# 2. Network Segmentation
+
+## Control 4: Trust Boundary Enforcement
+Enforce strict separation between:
+- Internet Boundary
+- Application Boundary
+- Data Boundary
+- External Integration Boundary
+
+Databases must never be directly accessible from the Internet.
+
+**Justification:**  
+Reduces lateral movement and limits attack surface.
+
+---
+
+## Control 5: API Gateway as Single Entry Point
+All external traffic must pass through the API Gateway.
+
+No direct service exposure.
+
+**Justification:**  
+Prevents bypass of authentication and rate limiting controls.
+
+---
+
+## Control 6: Separate Admin Plane
+Admin traffic must use:
+- Separate endpoint
+- Separate access policies
+- Restricted network access (IP allowlisting)
+
+**Justification:**  
+Mitigates administrative access threats.
+
+---
+
+# 3. Data Protection
+
+## Control 7: Encryption in Transit
+All communications must use TLS 1.2+ including:
+- Browser to API Gateway
+- Service-to-service communication
+- Payment Gateway integration
+
+**Justification:**  
+Mitigates data sniffing and interception threats.
+
+---
+
+## Control 8: Encryption at Rest
+All databases must use strong encryption (AES-256).
+
+**Justification:**  
+Protects against data breach and unauthorized database access.
+
+---
+
+## Control 9: Payment Data Tokenization
+Payment card data must not be stored directly.  
+Use tokenization via Payment Gateway.
+
+**Justification:**  
+Reduces regulatory exposure and impact of database compromise.
+
+---
+
+# 4. Secrets Management
+
+## Control 10: Centralized Secrets Vault
+API keys, database credentials, and gateway tokens must be stored in a secure secrets management system.
+
+No hardcoded secrets.
+
+**Justification:**  
+Mitigates API key leakage and impersonation threats.
+
+---
+
+## Control 11: Key Rotation Policy
+Enforce automatic rotation of:
+- API keys
+- Database credentials
+- Service tokens
+
+**Justification:**  
+Limits long-term impact of compromised credentials.
+
+---
+
+# 5. Monitoring and Logging
+
+## Control 12: Immutable Audit Logging
+Audit logs must be append-only and tamper-resistant.
+
+**Justification:**  
+Prevents repudiation and log tampering.
+
+---
+
+## Control 13: Centralized Monitoring and Alerting
+Deploy monitoring for:
+- Failed authentication attempts
+- Suspicious transaction patterns
+- Resource exhaustion
+- Unusual admin activity
+
+**Justification:**  
+Early detection of denial-of-service and privilege escalation attacks.
+
+---
+
+## Control 14: Log Retention and Integrity Verification
+Store logs securely with integrity verification (hash validation).
+
+**Justification:**  
+Ensures accountability and forensic reliability.
+
+---
+
+# 6. Secure Deployment Practices
+
+## Control 15: Infrastructure as Code with Security Baselines
+Deploy infrastructure using predefined hardened configurations.
+
+**Justification:**  
+Reduces configuration drift and misconfiguration risks.
+
+---
+
+## Control 16: Environment Separation
+Separate environments:
+- Development
+- Testing
+- Production
+
+Production data must not be used in lower environments.
+
+**Justification:**  
+Prevents data leakage and unauthorized access.
+
+---
+
+## Control 17: Defense-in-Depth Strategy
+Implement layered security:
+- WAF in front of API Gateway
+- Rate limiting
+- Intrusion detection
+- Network firewalls
+
+**Justification:**  
+Provides multiple layers of protection against denial-of-service and spoofing attacks.
+
+---
+
+# Updated Architecture Summary
+
+The updated secure architecture now includes:
+
+- API Gateway as controlled entry point
+- MFA for administrative access
+- Segmented network boundaries
+- Encrypted communication and storage
+- Centralized secrets management
+- Immutable audit logging
+- Monitoring and alerting mechanisms
+- Defense-in-depth controls
+
+These architectural controls directly address previously identified STRIDE threats and reduce overall system risk.
+
+---
+
 
 
 
