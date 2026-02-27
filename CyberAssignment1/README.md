@@ -400,7 +400,9 @@ The updated secure architecture now includes:
 
 These architectural controls directly address previously identified STRIDE threats and reduce overall system risk.
 
----
+## Secure Architecture Diagram
+
+![Secure Architecture](./SecureDesign.png)
 
 
 
