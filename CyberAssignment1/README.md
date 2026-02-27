@@ -484,6 +484,91 @@ Post-Treatment Risk Level: Medium
 The remaining risk is considered acceptable within operational and regulatory tolerance thresholds.
 
 
+# Assumptions and Limitations
+
+This project is based on a conceptual online payment processing system and includes the following assumptions and limitations.
+
+---
+
+# Assumptions
+
+## 1. Trusted Cloud Infrastructure
+It is assumed that the underlying cloud infrastructure (network hardware, virtualization layer, and physical security) is secure and managed by a trusted provider.
+
+## 2. Secure Third-Party Payment Gateway
+The external Payment Gateway and Core Banking System are assumed to:
+- Enforce strong security controls
+- Maintain PCI-DSS compliance
+- Implement proper encryption and fraud detection
+
+## 3. Correct Implementation of Controls
+It is assumed that:
+- MFA is properly configured
+- TLS certificates are valid and correctly deployed
+- RBAC policies are correctly enforced
+- Secrets management is securely implemented
+
+## 4. No Malicious Insiders in Infrastructure Teams
+The model assumes no intentional insider sabotage at infrastructure or database administration level.
+
+## 5. STRIDE-Based Threat Coverage
+The threat model assumes that the STRIDE framework adequately captures the majority of relevant security risks for this system.
+
+## 6. Internet-Facing System
+The architecture assumes the system is publicly accessible via the internet and must handle hostile external traffic.
+
+---
+
+# Limitations
+
+## 1. Conceptual Architecture Only
+This threat model is based on a high-level architecture diagram.  
+It does not include:
+- Source code review
+- Configuration review
+- Deployment pipeline validation
+- Infrastructure-specific misconfiguration analysis
+
+## 2. No Quantitative Risk Scoring
+Risk levels were assigned qualitatively (High/Medium/Low).  
+No formal quantitative risk model (e.g., FAIR, CVSS scoring) was applied.
+
+## 3. Zero-Day Vulnerabilities Not Modeled
+The analysis does not account for unknown zero-day vulnerabilities in:
+- Third-party libraries
+- Operating systems
+- Cloud services
+
+## 4. Limited Insider Threat Modeling
+While administrative access risks were considered, deep insider threat scenarios were not exhaustively modeled.
+
+## 5. No Performance-Security Tradeoff Analysis
+The design does not evaluate performance impacts of:
+- Encryption overhead
+- Logging verbosity
+- Rate limiting thresholds
+
+## 6. External Dependencies Outside Control
+Security of:
+- Payment Gateway
+- Core Banking System
+- Cloud infrastructure
+
+is outside direct architectural control and therefore introduces unavoidable residual risk.
+
+## 7. Compliance Validation Not Included
+Although payment systems require regulatory compliance (e.g., PCI-DSS), formal compliance validation was not performed in this analysis.
+
+---
+
+# Summary
+
+This threat modeling and secure architecture design exercise provides a structured, defense-in-depth approach to reducing risk.  
+However, due to its high-level and conceptual nature, it cannot guarantee elimination of all security threats.
+
+Residual risk remains inherent in any internet-facing financial system.
+
+
 
 
 
