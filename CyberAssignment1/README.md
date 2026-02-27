@@ -426,23 +426,19 @@ Risk handling methods used:
 
 # Risk Treatment Table
 
-| Threat | STRIDE Category | Risk Level | Treatment Strategy | Treatment Decision | Residual Risk |
-|--------|----------------|------------|-------------------|-------------------|---------------|
-
-| Spoofing User Browser | Spoofing | High | Mitigate | Enforce MFA, TLS, token validation | Medium |
-| Spoofing Admin Browser | Spoofing | High | Mitigate | MFA + IP allowlisting + RBAC | Low |
-| Spoofing Auth Service | Spoofing | High | Mitigate | Mutual TLS + token signing | Medium |
-| Spoofing Payment Gateway | Spoofing | High | Mitigate + Transfer | Webhook signature validation + gateway contractual controls | Medium |
-| API Gateway Crash (DoS) | Denial of Service | High | Mitigate | Rate limiting, WAF, autoscaling | Medium |
-| HTTPS Data Interruption | Denial of Service | High | Mitigate | Redundant infrastructure + TLS hardening | Medium |
-| Logging Resource Exhaustion | Denial of Service | High | Mitigate | Log rate limiting + monitoring alerts | Medium |
-| Audit Log Write Denial | Repudiation | High | Mitigate | Append-only immutable logging | Low |
-| Data Flow Sniffing | Information Disclosure | High | Mitigate | End-to-end TLS encryption | Low |
-| Privilege Escalation via API Gateway | Elevation of Privilege | High | Mitigate | Strict RBAC + least privilege enforcement | Medium |
-| Execution Flow Manipulation | Elevation of Privilege | High | Mitigate | Input validation + service authentication | Medium |
-
----
-
+| Threat                                   | STRIDE Category        | Initial Risk | Treatment Strategy        | Treatment Action Implemented                                  | Residual Risk |
+|-------------------------------------------|------------------------|--------------|---------------------------|----------------------------------------------------------------|---------------|
+| Spoofing User Browser                    | Spoofing               | High         | Mitigate                  | MFA, TLS enforcement, token validation                         | Medium        |
+| Spoofing Admin Browser                   | Spoofing               | High         | Mitigate                  | MFA, IP allowlisting, strict RBAC                              | Low           |
+| Spoofing Auth Service                    | Spoofing               | High         | Mitigate                  | Mutual TLS, signed tokens                                      | Medium        |
+| Spoofing Payment Gateway                 | Spoofing               | High         | Mitigate + Transfer       | Webhook signature validation, contractual SLA with provider    | Medium        |
+| API Gateway Crash (DoS)                  | Denial of Service      | High         | Mitigate                  | WAF, rate limiting, autoscaling                                | Medium        |
+| HTTPS Data Interruption                  | Denial of Service      | High         | Mitigate                  | Redundant infrastructure, TLS hardening                        | Medium        |
+| Logging Service Resource Exhaustion      | Denial of Service      | High         | Mitigate                  | Log throttling, monitoring alerts                              | Medium        |
+| Audit Log Write Denial                   | Repudiation            | High         | Mitigate                  | Append-only immutable logging                                  | Low           |
+| Data Flow Sniffing                       | Information Disclosure | High         | Mitigate                  | End-to-end TLS encryption                                      | Low           |
+| Privilege Escalation via API Gateway     | Elevation of Privilege | High         | Mitigate                  | Least privilege RBAC enforcement                               | Medium        |
+| Execution Flow Manipulation              | Elevation of Privilege | High         | Mitigate                  | Strict input validation, service authentication                | Medium        |
 # Transfer Decisions
 
 Certain risks are partially transferred:
