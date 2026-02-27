@@ -170,35 +170,26 @@ Actions must be traceable to a specific identity.
 
 ![ThreatModelling](./ThreatModel.png)
 
-# 🔐 Threat Model Table
+# Threat Model Table (STRIDE-Based)
 
-| Threat ID | Threat Title | STRIDE Category | Threat Area | Affected Component | Description | Impact | Risk Level |
-|------------|--------------|----------------|-------------|-------------------|-------------|--------|------------|
-
-| 0 | Spoofing the Userbrowser External Entity | Spoofing | Authentication | UserBrowser | Userbrowser may be spoofed by an attacker and could allow unauthorized access. | Unauthorized access and identity impersonation. | High |
-| 8 | Spoofing the AdminBrowser External Entity | Spoofing | Administrative Access | AdminBrowser | Admin browser may be spoofed by an attacker. | Full administrative compromise. | High |
-| 27 | Spoofing the Auth service Process | Spoofing | Authentication | Auth Service | Auth service may be spoofed by an attacker. | Credential theft or token manipulation. | High |
-| 58 | Spoofing the Transaction Service Process | Spoofing | Authorization | Transaction Service | Transaction service may be spoofed. | Manipulated financial transactions. | High |
-| 69 | Spoofing the Payment service Process | Spoofing | Authorization | Payment Service | Payment service may be spoofed. | Fraudulent payment processing. | High |
-| 44 | Spoofing of the Payment Gateway External Destination Entity | Spoofing | API Communication | Payment Gateway | Payment Gateway may be spoofed by an attacker. | Fraudulent payment confirmation. | High |
-
-| 2 | Potential Process Crash or Stop for API Gateway | Denial of Service | API Communication | API Gateway | API Gateway crashes or halts processing. | Service outage and inability to process payments. | High |
-| 3 | Data Flow HTTPS Is Potentially Interrupted | Denial of Service | API Communication | HTTPS Data Flow | An external agent interrupts data flow over HTTPS. | Payment interruption and service downtime. | High |
-| 40 | Potential Excessive Resource Consumption for Logging Service | Denial of Service | Logging and Monitoring | Logging Service | Logging service may experience resource exhaustion. | Loss of monitoring and forensic visibility. | High |
-
-| 38 | Data Store Denies Audit Log Store Potentially Writing Data | Repudiation | Logging and Monitoring | Audit Log Store | Audit log store denies writing data. | Loss of accountability and traceability. | High |
-| 1 | Potential Data Repudiation by API Gateway | Repudiation | API Communication | API Gateway | API Gateway claims that it did not receive data. | Transaction dispute and non-repudiation failure. | High |
-
-| 81 | Data Flow Sniffing | Information Disclosure | API Communication | Generic Data Flow | Data flow may be intercepted by attacker. | Exposure of credentials or payment data. | High |
-
-| 85 | Elevation Using Impersonation | Elevation of Privilege | Authorization | API Gateway | API Gateway may impersonate components. | Unauthorized privilege escalation. | High |
-| 56 | Elevation by Changing the Execution Flow in API Gateway | Elevation of Privilege | Authorization | API Gateway | Execution flow may be modified. | Bypass of security controls. | High |
-
-| 36 | Spoofing of Destination Data Store Audit Log Store | Spoofing | Logging and Monitoring | Audit Log Store | Audit log store may be spoofed. | Tampered audit records. | High |
-
-| 24 | Elevation Using Impersonation | Elevation of Privilege | Authentication | Auth Service | Auth service may impersonate other components. | Token misuse and authentication bypass. | High |
-
----
+| Threat ID | Threat Title | STRIDE Category | Threat Area | Affected Component | Impact | Risk Level |
+|-----------|--------------|----------------|-------------|-------------------|--------|------------|
+| 0 | Spoofing the UserBrowser External Entity | Spoofing | Authentication | UserBrowser | Unauthorized access through impersonation | High |
+| 8 | Spoofing the AdminBrowser External Entity | Spoofing | Administrative Access | AdminBrowser | Full administrative compromise | High |
+| 27 | Spoofing the Auth Service Process | Spoofing | Authentication | Auth Service | Credential theft or token manipulation | High |
+| 58 | Spoofing the Transaction Service Process | Spoofing | Authorization | Transaction Service | Manipulated financial transactions | High |
+| 69 | Spoofing the Payment Service Process | Spoofing | Authorization | Payment Service | Fraudulent payment processing | High |
+| 44 | Spoofing the Payment Gateway | Spoofing | API Communication | Payment Gateway | Fraudulent payment confirmation | High |
+| 2 | API Gateway Process Crash | Denial of Service | API Communication | API Gateway | Payment processing outage | High |
+| 3 | HTTPS Data Flow Interruption | Denial of Service | API Communication | HTTPS Data Flow | Service downtime and transaction interruption | High |
+| 40 | Excessive Resource Consumption | Denial of Service | Logging and Monitoring | Logging Service | Loss of monitoring visibility | High |
+| 38 | Audit Log Store Write Denial | Repudiation | Logging and Monitoring | Audit Log Store | Loss of accountability and traceability | High |
+| 1 | Data Repudiation by API Gateway | Repudiation | API Communication | API Gateway | Transaction disputes and non-repudiation failure | High |
+| 81 | Data Flow Sniffing | Information Disclosure | API Communication | Data Flow | Exposure of credentials or payment data | High |
+| 85 | Elevation Using Impersonation | Elevation of Privilege | Authorization | API Gateway | Unauthorized privilege escalation | High |
+| 56 | Execution Flow Manipulation | Elevation of Privilege | Authorization | API Gateway | Bypass of security controls | High |
+| 36 | Spoofing Audit Log Store | Spoofing | Logging and Monitoring | Audit Log Store | Tampered audit records | High |
+| 24 | Elevation via Auth Service Impersonation | Elevation of Privilege | Authentication | Auth Service | Authentication bypass | High |
 
 
 
