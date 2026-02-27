@@ -91,13 +91,11 @@ The system is assumed to be:
 - API tokens
 
 ---
+## High-Level Architecture Diagram
 
-Admin Portal → Admin Service
+![High Level Architecture](./HighLevelDiagram.png)
 
-Privileged access boundary
-
-Strong authentication and logging required
-
+---
 # 7. Trust Boundaries
 
 1. Internet Boundary (User → Frontend)
