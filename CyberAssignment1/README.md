@@ -114,10 +114,6 @@ Each boundary represents a change in trust level and must be secured.
 
 ## 1. Asset Identification
 
-The following critical assets were identified for the Online Payment Processing Application.
-
----
-
 ## 1.1 Asset Inventory Table
 
 | Asset ID | Asset Name | Description | Asset Type | Sensitivity Level |
@@ -167,27 +163,6 @@ Actions must be traceable to a specific identity.
 | System Availability | Low | Medium | Critical | Medium |
 
 ---
-
-## 4. Justification of Security Objectives
-
-- Payment and financial assets require maximum confidentiality and integrity due to regulatory and fraud risks.
-- Authentication data is highly sensitive and must be protected against credential theft.
-- Transaction integrity is critical to prevent financial manipulation.
-- Audit logs must guarantee integrity to support non-repudiation.
-- Availability is critical because downtime directly impacts financial operations and merchant trust.
-- Accountability ensures traceability of user and administrative actions.
-
----
-
-## 5. Key Security Priorities
-
-Based on risk analysis, the highest priority protections are:
-
-1. Protection of payment card data
-2. Transaction integrity assurance
-3. Secure authentication mechanisms
-4. Protection of merchant banking details
-5. Prevention of insider misuse
 
 
 
