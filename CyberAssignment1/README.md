@@ -168,7 +168,7 @@ Actions must be traceable to a specific identity.
 
 ## ThreatModelling Diagram
 
-![ThreatModelling](./ThreatModelling.png)
+![ThreatModelling](./ThreatModel.png)
 
 
 
