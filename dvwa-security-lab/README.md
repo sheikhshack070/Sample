@@ -53,9 +53,9 @@ There were no restrictions on the number of login attempts, meaning multiple pas
 
 ## Screenshot
 
-```
+
 ![Brute Force Easy](./BruteForceEasy.png)
-```
+
 
 
 ## Explanation (Why the Attack Works)
