@@ -1082,3 +1082,153 @@ Recommended security practices include:
 - Invalidating sessions after logout
 
 Strong session identifiers should be unpredictable and resistant to guessing attacks.
+
+---
+
+# DOM Based Cross-Site Scripting (XSS)
+
+## Vulnerability Overview
+
+DOM-based Cross-Site Scripting (XSS) occurs when client-side JavaScript processes untrusted input and inserts it directly into the Document Object Model (DOM) without proper sanitization.
+
+Unlike reflected or stored XSS, the malicious payload is never sent to the server. Instead, the attack executes entirely in the user's browser when JavaScript reads values from the URL and writes them into the page.
+
+In DVWA, the DOM XSS vulnerability occurs because the application reads the `default` parameter or URL fragment and inserts it into the page without sanitizing the input.
+
+---
+
+# Security Level: Low
+
+### Payload Used
+
+http://localhost:8080/vulnerabilities/xss_d/?default=<script>alert('XSS')</script>
+
+### Steps to Perform the Attack
+
+1. Navigate to **XSS (DOM)** in DVWA.
+2. Set **DVWA Security Level → Low**.
+3. Locate the URL containing the `default` parameter.
+4. Replace the value with the malicious payload.
+5. Reload the page.
+
+### Result
+
+A JavaScript alert popup appears displaying **XSS**, confirming successful script execution.
+
+### Screenshot
+
+![DOM Low](screenshots/DOM_Low.png)
+
+### Explanation
+
+At Low security level, DVWA performs no validation or filtering. The application directly inserts the `default` parameter value into the DOM, allowing arbitrary JavaScript execution.
+
+---
+
+# Security Level: Medium
+
+### Payload Used
+
+http://localhost:8080/vulnerabilities/xss_d/?default=<img src=x onerror=alert('XSS')>
+
+### Steps to Perform the Attack
+
+1. Change **DVWA Security Level → Medium**.
+2. Navigate back to **XSS (DOM)**.
+3. Replace the `default` parameter with the payload above.
+4. Reload the page.
+
+### Result
+
+A JavaScript alert popup appears again.
+
+### Screenshot
+
+![DOM Medium](screenshots/DOM_Medium.png)
+
+### Explanation
+
+At Medium security level, DVWA attempts to block `<script>` tags but does not properly sanitize other HTML elements. By using an image element with an `onerror` event handler, attackers can still execute JavaScript.
+
+---
+
+# Security Level: High
+
+### Payload Used
+
+http://localhost:8080/vulnerabilities/xss_d/?default=English#<script>alert(1)</script>
+
+### Steps to Perform the Attack
+
+1. Change **DVWA Security Level → High**.
+2. Navigate to **XSS (DOM)**.
+3. Leave the `default` parameter unchanged.
+4. Inject the payload in the URL fragment after the `#`.
+5. Reload the page.
+
+### Result
+
+A JavaScript alert popup appears displaying **1**, confirming the script executed successfully.
+
+### Screenshot
+
+![DOM High](screenshots/DOM_High.png)
+
+### Explanation
+
+At High security level, DVWA filters the `default` parameter more strictly. However, the application still processes the URL fragment (`#`) using client-side JavaScript. Since the fragment is not sanitized before being written to the DOM, attackers can inject malicious scripts through this portion of the URL.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Filtering Mechanism | Payload Used | Result |
+|----------------|--------------------|-------------|--------|
+| Low | No filtering | `<script>alert('XSS')</script>` | Successful |
+| Medium | Script filtering | `<img src=x onerror=alert('XSS')>` | Successful |
+| High | Parameter filtering but fragment not sanitized | `#<script>alert(1)</script>` | Successful |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability maps to:
+
+**OWASP Top 10 2021 — A03: Injection**
+
+Cross-Site Scripting (XSS) is categorized under injection vulnerabilities because untrusted input is interpreted as executable code.
+
+---
+
+# Security Impact Analysis
+
+DOM-based XSS vulnerabilities can allow attackers to execute malicious scripts in the victim's browser, which may lead to:
+
+• Session hijacking  
+• Cookie theft  
+• Account takeover  
+• Phishing attacks  
+• Redirection to malicious websites  
+• Web page defacement  
+• Malware delivery  
+
+Because the attack executes on the client side, traditional server-side protections may not detect it.
+
+---
+
+# Mitigation Strategies
+
+To prevent DOM-based XSS vulnerabilities:
+
+• Validate and sanitize all user inputs  
+• Avoid inserting untrusted data directly into the DOM  
+• Use safe DOM APIs such as `textContent` instead of `innerHTML`  
+• Implement Content Security Policy (CSP)  
+• Encode user-controlled input before displaying it  
+• Avoid unsafe functions such as `document.write()`
+
+---
+
+# Conclusion
+
+The DVWA DOM XSS module demonstrates how insecure client-side handling of user input can lead to DOM-based XSS vulnerabilities. Even when server-side filtering is implemented, improper handling of URL fragments and DOM manipulation can still allow attackers to execute malicious scripts in a user's browser.
