@@ -1232,3 +1232,149 @@ To prevent DOM-based XSS vulnerabilities:
 # Conclusion
 
 The DVWA DOM XSS module demonstrates how insecure client-side handling of user input can lead to DOM-based XSS vulnerabilities. Even when server-side filtering is implemented, improper handling of URL fragments and DOM manipulation can still allow attackers to execute malicious scripts in a user's browser.
+---
+
+# Reflected Cross-Site Scripting (XSS)
+
+## Vulnerability Overview
+
+Reflected Cross-Site Scripting (XSS) occurs when user input is immediately returned (reflected) by a web application in the HTTP response without proper validation or sanitization. 
+
+If malicious JavaScript is included in the input, the browser executes the script when the page loads. Unlike Stored XSS, the malicious payload is not permanently stored on the server. Instead, it must be delivered through a crafted request such as a malicious URL or form submission.
+
+In DVWA, the Reflected XSS vulnerability occurs because the application directly prints the value entered in the **"What's your name?"** field back to the webpage without properly sanitizing the input.
+
+---
+
+# Security Level: Low
+
+### Payload Used
+
+http://localhost:8080/vulnerabilities/xss_r/?name=<script>alert('XSS')</script>
+
+### Steps to Perform the Attack
+
+1. Navigate to **XSS (Reflected)** in DVWA.
+2. Set **DVWA Security Level → Low**.
+3. In the **What's your name?** input field, enter the payload above.
+4. Click **Submit**.
+
+### Result
+
+A JavaScript alert popup appears displaying **XSS**, confirming that the injected script executed successfully.
+
+### Screenshot
+
+![Reflected Low](./Reflected_low.png)
+
+### Explanation
+
+At Low security level, the application does not perform any filtering or sanitization on user input. The value entered in the input field is directly inserted into the webpage's HTML, allowing arbitrary JavaScript execution.
+
+---
+
+# Security Level: Medium
+
+### Payload Used
+
+<img src=x onerror=alert('XSS')>
+
+### Steps to Perform the Attack
+
+1. Change **DVWA Security Level → Medium**.
+2. Navigate again to **XSS (Reflected)**.
+3. Enter the payload above in the **name field**.
+4. Click **Submit**.
+
+### Result
+
+A JavaScript alert popup appears again, demonstrating that the application is still vulnerable.
+
+### Screenshot
+
+![Reflected Medium](./Reflected_medium.png)
+
+### Explanation
+
+At Medium security level, DVWA attempts to block `<script>` tags but fails to properly sanitize other HTML elements and event handlers. The `img` tag with an `onerror` event allows JavaScript to execute when the image fails to load, bypassing the filtering mechanism.
+
+---
+
+# Security Level: High
+
+### Payload Used
+
+<img src=x onerror=alert(1)>
+
+### Steps to Perform the Attack
+
+1. Change **DVWA Security Level → High**.
+2. Navigate to **XSS (Reflected)**.
+3. Enter the payload above in the **name input field**.
+4. Click **Submit**.
+
+### Result
+
+A JavaScript alert popup displaying **1** appears, confirming that the XSS payload successfully executed.
+
+### Screenshot
+
+![Reflected High](./Reflected_high.png)
+
+### Explanation
+
+At High security level, DVWA implements stronger filtering to block `<script>` tags. However, the filtering is still incomplete and does not properly sanitize HTML attributes or event handlers. Attackers can bypass the filter by using event-based payloads such as `onerror`.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Filtering Mechanism | Payload Used | Result |
+|----------------|--------------------|-------------|--------|
+| Low | No input filtering | `<script>alert('XSS')</script>` | Successful |
+| Medium | Basic script tag filtering | `<img src=x onerror=alert('XSS')>` | Successful |
+| High | Stronger filtering but incomplete sanitization | `<img src=x onerror=alert(1)>` | Successful |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability corresponds to:
+
+**OWASP Top 10 2021 — A03: Injection**
+
+Cross-Site Scripting (XSS) falls under injection vulnerabilities because untrusted input is interpreted as executable code by the browser.
+
+---
+
+# Security Impact Analysis
+
+Reflected XSS vulnerabilities allow attackers to execute malicious scripts in a victim’s browser. This can lead to several serious consequences:
+
+• Session hijacking  
+• Theft of authentication cookies  
+• Account takeover  
+• Phishing attacks  
+• Redirection to malicious websites  
+• Website defacement  
+• Malware delivery
+
+Attackers typically exploit reflected XSS by sending victims specially crafted URLs that contain malicious scripts.
+
+---
+
+# Mitigation Strategies
+
+To prevent reflected XSS vulnerabilities:
+
+• Validate and sanitize all user inputs  
+• Encode output before rendering it in the browser  
+• Use secure frameworks that automatically escape user input  
+• Implement Content Security Policy (CSP)  
+• Avoid directly inserting user input into HTML responses
+
+---
+
+# Conclusion
+
+The DVWA Reflected XSS module demonstrates how improper handling of user input can lead to script execution in the browser. Even when some filtering mechanisms are introduced, incomplete sanitization can still allow attackers to bypass protections and exploit the vulnerability.
