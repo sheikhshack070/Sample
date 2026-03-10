@@ -764,3 +764,148 @@ If exploited in real-world applications, SQL injection attacks could allow attac
 Using prepared statements and parameterized queries is the recommended defense against SQL injection attacks.
 
 ---
+
+# SQL Injection (Blind)
+
+## Vulnerability Overview
+
+Blind SQL Injection occurs when an application is vulnerable to SQL injection but does not directly display database output to the user. Instead of showing query results, the application returns different responses depending on whether the injected SQL condition evaluates to true or false.
+
+Attackers can exploit this behavior to infer database information such as table names, database names, and user credentials.
+
+In DVWA, the Blind SQL Injection module demonstrates how attackers can extract information by observing application responses or response delays.
+
+---
+
+# Security Level: LOW
+
+## Payload Used
+
+```
+1' AND 1=1 #
+```
+
+True condition test:
+
+```
+1' AND 1=1 #
+```
+
+False condition test:
+
+```
+1' AND 1=2 #
+```
+
+## Result
+
+The application returned different responses depending on whether the SQL condition was true or false.
+
+When the condition was true, the application indicated that the user ID exists in the database.
+
+When the condition was false, the application indicated that the user ID was missing.
+
+This confirmed that SQL injection was possible.
+
+## Screenshot
+
+![Blind SQL Injection Low](BlindSQL_Low.png)
+
+## Explanation (Why the Attack Works)
+
+At the Low security level, the application directly includes user input in the SQL query without performing validation or sanitization.
+
+Because the response changes depending on the injected condition, attackers can determine whether the SQL query evaluates to true or false.
+
+This allows attackers to extract information from the database using blind SQL injection techniques.
+
+---
+
+# Security Level: MEDIUM
+
+## Payload Used
+
+No payload could be directly entered due to interface restrictions.
+
+## Result
+
+The application replaced the input field with a dropdown menu containing predefined user IDs.
+
+Because users cannot manually enter SQL payloads through the interface, direct SQL injection from the browser input field was not possible.
+
+## Screenshot
+
+![Blind SQL Injection Medium](BlindSQL_Medium.png)
+
+## Explanation
+
+At the Medium security level, DVWA attempts to mitigate SQL injection by restricting input through a dropdown menu.
+
+This prevents users from directly entering SQL injection payloads through the interface.
+
+However, this protection only exists on the client side. An attacker could still modify the HTTP request or intercept the request using tools such as Burp Suite to inject malicious SQL statements.
+
+Therefore, the vulnerability may still exist if the request is manipulated outside the user interface.
+
+---
+
+# Security Level: HIGH
+
+## Payload Used
+
+```
+1' AND SLEEP(5) #
+```
+
+## Result
+
+The page response was delayed by approximately 5 seconds after submitting the payload.
+
+This delay confirmed that the SQL query was executed with the injected condition.
+
+## Screenshot
+
+![Blind SQL Injection High](BlindSQL_High.png)
+
+## Explanation
+
+At the High security level, DVWA moves the injection point to a cookie parameter instead of a standard input field.
+
+Although this change attempts to improve security, the application still constructs SQL queries using unsanitized cookie data.
+
+By using a time-based payload such as `SLEEP(5)`, attackers can determine whether the injected SQL condition is executed based on the delay in the server response.
+
+This demonstrates that blind SQL injection is still possible.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Payload | Result |
+|----------------|--------|--------|
+| Low | `1' AND 1=1 #` | Blind SQL injection successful |
+| Medium | Input restricted to dropdown | Direct injection prevented in UI |
+| High | `1' AND SLEEP(5) #` | Time-based blind injection successful |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability relates to:
+
+**OWASP Top 10 – A03: Injection**
+
+Blind SQL injection allows attackers to extract database information even when the application does not display query results.
+
+---
+
+# Security Impact
+
+If exploited in real-world systems, attackers could:
+
+- Extract database names and tables
+- Retrieve sensitive user data
+- Access password hashes
+- Perform database enumeration
+
+Using prepared statements and parameterized queries is the recommended defense against SQL injection attacks.
