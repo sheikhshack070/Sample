@@ -612,3 +612,155 @@ If exploited in real-world applications, attackers could:
 Proper file validation, MIME type checking, and restricting executable uploads are essential security practices to prevent this vulnerability.
 
 ---
+
+# SQL Injection
+
+## Vulnerability Overview
+
+SQL Injection is a vulnerability that occurs when an application includes user input directly within SQL queries without proper validation or parameterization. Attackers can manipulate database queries to retrieve unauthorized data, bypass authentication mechanisms, or modify database contents.
+
+In DVWA, the SQL Injection module allows attackers to manipulate the `user_id` parameter to retrieve unintended information from the database.
+
+---
+
+# Security Level: LOW
+
+## Payload Used
+
+```
+1' OR '1'='1
+```
+
+## Result
+
+The SQL query returned multiple user records from the database instead of a single record. This indicates that the SQL query was successfully manipulated.
+
+Example output included several users such as:
+
+```
+ID: 1
+First name: admin
+Surname: admin
+
+ID: 2
+First name: Gordon
+Surname: Brown
+```
+
+## Screenshot
+
+![SQL Injection Low](SQLInjectionLow.png)
+
+## Explanation (Why the Attack Works)
+
+At the Low security level, the application directly inserts user input into the SQL query without performing any sanitization or validation.
+
+The backend query resembles:
+
+```
+SELECT first_name, last_name FROM users WHERE user_id = '$id';
+```
+
+The injected payload modifies the logic of the query so that the condition `'1'='1'` always evaluates to true, causing the database to return all records.
+
+---
+
+# Security Level: MEDIUM
+
+## Payload Used
+
+```
+1 OR 1=1
+```
+
+## Result
+
+The application interface replaced the input field with a dropdown menu containing predefined user IDs (1–5), preventing direct entry of SQL payloads.
+
+## Screenshot
+
+![SQL Injection Medium](SQLInjectionMedium.png)
+
+## Explanation
+
+At the Medium security level, DVWA attempts to mitigate SQL injection by restricting user input through a dropdown menu.
+
+This prevents users from directly typing SQL payloads into the input field.
+
+However, this protection only exists on the client side. An attacker could still intercept and modify the HTTP request to inject malicious SQL statements.
+
+For example, modifying the request parameter to:
+
+```
+id=1 OR 1=1
+```
+
+could still manipulate the SQL query and retrieve unintended database records.
+
+This demonstrates that client-side input restrictions are not sufficient to prevent SQL injection.
+
+---
+
+# Security Level: HIGH
+
+## Payload Used
+
+```
+1' OR '1'='1' #
+```
+
+## Result
+
+The SQL injection payload was entered through the popup input field and the database returned multiple records.
+
+## Screenshot
+
+![SQL Injection High](SQLInjectionHigh.png)
+
+## Explanation
+
+At the High security level, DVWA attempts to sanitize user input using functions such as `mysql_real_escape_string()`.
+
+Although this provides some protection, it is still possible to manipulate the SQL query.
+
+The injected condition `'1'='1'` evaluates to true, which causes the database to return all matching records.
+
+This demonstrates that input sanitization alone is not a reliable defense against SQL injection.
+
+The recommended mitigation is to use parameterized queries or prepared statements.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Payload | Result |
+|----------------|--------|--------|
+| Low | `1' OR '1'='1` | All user records returned |
+| Medium | `1 OR 1=1` | Interface restricts input but vulnerability still exists |
+| High | `1' OR '1'='1' #` | Injection still possible |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability falls under:
+
+**OWASP Top 10 – A03: Injection**
+
+SQL Injection vulnerabilities allow attackers to execute malicious SQL statements that can compromise the database.
+
+---
+
+# Security Impact
+
+If exploited in real-world applications, SQL injection attacks could allow attackers to:
+
+- Retrieve sensitive user data
+- Access password hashes
+- Modify or delete database records
+- Bypass authentication mechanisms
+- Completely compromise the database
+
+Using prepared statements and parameterized queries is the recommended defense against SQL injection attacks.
+
+---
