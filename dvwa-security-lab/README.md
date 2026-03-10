@@ -2014,3 +2014,195 @@ To prevent File Inclusion vulnerabilities:
 # Conclusion
 
 The DVWA File Inclusion module demonstrates how improper handling of file paths can expose applications to Local File Inclusion vulnerabilities. While the Low security level is fully vulnerable and the Medium level adds partial protection, the High level still allows inclusion of files within the application directory, showing that incomplete validation can still lead to security risks.
+
+
+---
+
+# Docker Inspection Tasks
+
+# DVWA Docker Environment Analysis
+
+## Overview
+DVWA (Damn Vulnerable Web Application) is running inside a Docker container using the image `vulnerables/web-dvwa`. The container hosts a complete web application environment that includes a web server, application code, and a database. Docker provides isolation so the vulnerable application can be tested safely without affecting the host machine.
+
+---
+
+## Where Application Files Are Stored
+
+The DVWA application files are stored inside the Docker container’s filesystem. Apache serves the web content from the default web root directory:
+
+/var/www/html
+
+Inside this directory, the DVWA application is located in:
+
+/var/www/html/dvwa
+
+This folder contains all the PHP source code, configuration files, images, stylesheets, and vulnerability modules used by the application. Logs from the container show PHP files being executed from paths such as:
+
+/var/www/html/dvwa/includes/DBMS/MySQL.php
+
+This confirms that the application code resides inside the container rather than directly on the host machine.
+
+---
+
+## Backend Technology DVWA Uses
+
+From the container logs and configuration, DVWA uses a classic LAMP-style backend stack.
+
+The web server used is Apache HTTP Server running on Debian Linux. Apache handles incoming HTTP requests and serves the DVWA web interface to users.
+
+The server-side language used by DVWA is PHP. Many files such as `login.php`, `setup.php`, and `index.php` show that the application logic is written in PHP.
+
+For database functionality, DVWA uses MariaDB, which is a MySQL-compatible relational database. When the container starts, the logs show the database server starting with the message:
+
+Starting MariaDB database server: mysqld
+
+MariaDB stores application data such as user accounts and vulnerability testing data.
+
+Overall, the backend stack used by DVWA consists of:
+
+- Apache (Web Server)
+- PHP (Server-side scripting language)
+- MariaDB/MySQL (Database)
+- Debian Linux (Operating system)
+
+---
+
+## How Docker Isolates the Environment
+
+Docker isolates DVWA from the host operating system using containerization. This isolation ensures the intentionally vulnerable application cannot directly affect the host system.
+
+### Network Isolation
+
+The container runs on Docker’s bridge network and has its own internal IP address:
+
+172.17.0.2
+
+This means the container communicates through a virtual network created by Docker rather than using the host network directly.
+
+### Port Mapping
+
+Apache inside the container runs on port 80. Docker maps this internal port to port 8080 on the host machine:
+
+0.0.0.0:8080 -> 80/tcp
+
+Because of this mapping, users can access DVWA through a web browser using:
+
+http://localhost:8080
+
+Docker forwards traffic from the host’s port 8080 to port 80 inside the container.
+
+### Filesystem Isolation
+
+Docker containers use a layered filesystem. In this case, the container uses the overlayfs storage driver. This means the container has its own filesystem layer where the DVWA application and related files exist independently from the host system. Changes made inside the container do not affect the host’s filesystem.
+
+### Process Isolation
+
+Processes running inside the container, such as Apache and MariaDB, operate within the container environment and have their own process IDs. These processes are isolated from the host’s processes, which prevents them from interfering with other applications running on the host machine.
+
+---
+
+## Summary
+
+The DVWA application runs inside a Docker container where the application files are stored in `/var/www/html/dvwa`. The backend technology stack consists of Apache, PHP, and MariaDB running on Debian Linux. Docker isolates the environment through separate networking, port mapping, filesystem layers, and process isolation. This allows DVWA to be safely used for security testing without impacting the host system.
+
+---
+
+# Questions
+
+# DVWA Security Analysis Questions
+
+## Overview
+During this assignment, DVWA (Damn Vulnerable Web Application) was used to test different web vulnerabilities at various security levels. DVWA is designed to intentionally contain vulnerabilities so that students can understand how attacks work and how proper security controls can prevent them. The following answers explain why certain attacks were successful at lower security levels and how they were prevented at higher levels.
+
+---
+
+## Why SQL Injection Succeeds at Low Security
+
+SQL Injection succeeds at the **Low security level** because the application does not properly check or sanitize user input before using it in a database query. The user input is directly inserted into the SQL statement, which allows attackers to manipulate the query.
+
+For example, the application may run a query like:
+
+SELECT * FROM users WHERE id = '$id';
+
+If an attacker enters something like:
+
+1' OR '1'='1
+
+the final query becomes:
+
+SELECT * FROM users WHERE id = '1' OR '1'='1';
+
+Since `'1'='1'` is always true, the database returns all the records instead of just one. This happens because the application trusts the user input and does not validate it. As a result, attackers can change the logic of the SQL query and retrieve data they should not have access to.
+
+---
+
+## What Control Prevents It at High Security
+
+At the **High security level**, SQL Injection is prevented because stronger security controls are used to handle user input.
+
+One important control is the use of **prepared statements (parameterized queries)**. In this method, the SQL query is written first and user input is passed separately as a parameter. This prevents the input from changing the structure of the SQL command.
+
+For example:
+
+SELECT * FROM users WHERE id = ?
+
+Here the user input is treated only as data, not as part of the SQL command.
+
+Other protections that help prevent SQL Injection include:
+
+- Input validation (checking that the input is in the correct format)
+- Escaping special characters
+- Restricting inputs to expected values
+
+These controls make it much harder for attackers to inject malicious SQL code.
+
+---
+
+## Does HTTPS Prevent These Attacks? Why or Why Not?
+
+No, **HTTPS does not prevent SQL Injection or other application vulnerabilities**.
+
+HTTPS only encrypts the data being sent between the user and the server. This protects the information from being intercepted or modified while it is travelling over the network.
+
+However, HTTPS does not check whether the input itself is malicious. If an attacker sends a SQL Injection payload through an HTTPS connection, the server will still receive it and process it normally.
+
+In simple terms, HTTPS protects **how the data travels**, but it does not fix **vulnerabilities in the application code**.
+
+---
+
+## What Risks Exist if This Application Is Deployed Publicly?
+
+If an application with these vulnerabilities was deployed on a public server, it could create serious security risks.
+
+First, attackers could steal sensitive information from the database using SQL Injection. This could include usernames, passwords, or other confidential data.
+
+Second, vulnerabilities such as command injection or file inclusion could allow attackers to run commands on the server itself, which could lead to full system compromise.
+
+Third, attackers could modify or deface the website, or upload malicious files that could harm other users.
+
+Overall, deploying a vulnerable application publicly without proper security controls could lead to data breaches, system compromise, and loss of user trust.
+
+---
+
+## Mapping Vulnerabilities to OWASP Top 10
+
+During testing, several vulnerabilities were identified that correspond to categories in the **OWASP Top 10**, which lists the most common and critical web security risks.
+
+| Vulnerability | OWASP Top 10 Category |
+|---------------|----------------------|
+| SQL Injection | A03: Injection |
+| Blind SQL Injection | A03: Injection |
+| Command Injection | A03: Injection |
+| File Inclusion (LFI) | A05: Security Misconfiguration |
+| Cross-Site Request Forgery (CSRF) | A01: Broken Access Control |
+| Weak Session IDs | A07: Identification and Authentication Failures |
+| File Upload Vulnerability | A05: Security Misconfiguration |
+
+These examples show how the vulnerabilities tested in DVWA relate to real-world security risks that developers must protect against.
+
+---
+
+## Conclusion
+
+This exercise helped demonstrate how common web vulnerabilities work and why proper security controls are important. At the low security level, attacks such as SQL Injection succeed because the application does not validate user input. At higher security levels, techniques like prepared statements and input validation help prevent these attacks. While HTTPS improves communication security, it does not prevent application vulnerabilities. Understanding these weaknesses is important for developing secure web applications.
