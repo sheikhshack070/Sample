@@ -54,12 +54,9 @@ There were no restrictions on the number of login attempts, meaning multiple pas
 ## Screenshot
 
 ```
-screenshots/bruteforce_low_success.png
+BruteForceEasy.png
 ```
 
-*(Insert screenshot showing successful login)*
-
----
 
 ## Explanation (Why the Attack Works)
 
