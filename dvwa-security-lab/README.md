@@ -1530,3 +1530,317 @@ To prevent Stored XSS vulnerabilities:
 # Conclusion
 
 The DVWA Stored XSS module demonstrates how improperly sanitized user input stored in a database can lead to persistent script execution in users’ browsers. Even when filtering mechanisms are applied, incomplete sanitization allows attackers to bypass protections and exploit the vulnerability.
+
+---
+
+# Content Security Policy (CSP) Bypass
+
+## Vulnerability Overview
+
+Content Security Policy (CSP) is a browser security mechanism designed to mitigate attacks such as Cross-Site Scripting (XSS) by restricting which sources of content (scripts, images, styles, etc.) can be loaded by a webpage.
+
+However, improperly configured CSP policies may still allow attackers to execute malicious JavaScript. If the policy allows loading scripts from external domains or uses insecure mechanisms such as JSONP callbacks, attackers can bypass the intended restrictions.
+
+The DVWA CSP Bypass module demonstrates how weak or misconfigured CSP rules can allow external scripts or malicious callbacks to execute within the application.
+
+---
+
+# Security Level: Low
+
+### Script URL Used
+
+https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+
+### Steps to Perform the Attack
+
+1. Navigate to **CSP Bypass** in DVWA.
+2. Set **DVWA Security Level → Low**.
+3. In the input field, enter the external script URL above.
+4. Click **Include**.
+5. Open **Developer Tools → Network tab** to verify that the script is loaded.
+
+### Result
+
+The external JavaScript file **jquery.min.js** loads successfully from the Google CDN.
+
+### Screenshot
+
+![CSP Low](screenshots/CSP_low.png)
+
+### Explanation
+
+At Low security level, the application allows users to include any external script URL. Since the CSP configuration permits external sources, an attacker can load arbitrary JavaScript from trusted CDNs and execute malicious code.
+
+---
+
+# Security Level: Medium
+
+### Script URL Tested
+
+https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+
+### Steps to Perform the Test
+
+1. Set **DVWA Security Level → Medium**.
+2. Navigate again to **CSP Bypass**.
+3. Enter the external script URL above in the input field.
+4. Click **Include**.
+5. Open **Developer Tools → Console** to inspect CSP behavior.
+
+### Result
+
+The browser blocks the external script due to stricter CSP rules.
+
+### Screenshot
+
+![CSP Medium](screenshots/CSP_medium.png)
+
+### Explanation
+
+At Medium security level, DVWA implements a stricter CSP configuration that restricts script sources to the same origin (`'self'`). Because of this restriction, scripts from external CDNs such as Google APIs are blocked, preventing the CSP bypass demonstrated in the Low security level.
+
+---
+
+# Security Level: High
+
+### Payload Used
+
+http://localhost:8080/vulnerabilities/csp/source/jsonp.php?callback=alert
+
+### Steps to Perform the Attack
+
+1. Set **DVWA Security Level → High**.
+2. Navigate to **CSP Bypass**.
+3. Observe that the page loads JavaScript from:
+
+/vulnerabilities/csp/source/jsonp.php
+
+4. Modify the request by injecting a malicious callback function:
+
+http://localhost:8080/vulnerabilities/csp/source/jsonp.php?callback=alert
+
+5. Load the URL in the browser.
+
+### Result
+
+A JavaScript alert popup appears displaying **15**, confirming successful execution of injected JavaScript.
+
+### Screenshot
+
+![CSP High](screenshots/CSP_hard.png)
+
+### Explanation
+
+At High security level, the application attempts to enforce CSP restrictions. However, it uses **JSONP (JSON with Padding)** to retrieve data from the server. Because the `callback` parameter is not validated, attackers can inject arbitrary JavaScript functions. This allows the attacker to execute malicious code despite the CSP protections.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Protection Mechanism | Attack Method | Result |
+|----------------|----------------------|---------------|--------|
+| Low | Weak CSP allowing external scripts | Load external CDN script | Successful |
+| Medium | Restricts scripts to same origin | Attempted CDN script injection | Blocked |
+| High | Uses JSONP for script loading | Callback injection (`alert`) | Successful |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability relates to:
+
+**OWASP Top 10 2021 – A05: Security Misconfiguration**
+
+Improper configuration of security headers such as CSP can allow attackers to bypass intended protections.
+
+---
+
+# Security Impact Analysis
+
+Weak or misconfigured CSP implementations may allow attackers to:
+
+• Execute malicious JavaScript  
+• Bypass XSS protection mechanisms  
+• Load malicious external scripts  
+• Steal session cookies or authentication tokens  
+• Manipulate webpage content or redirect users  
+
+If combined with other vulnerabilities, CSP weaknesses can significantly increase the attack surface of the application.
+
+---
+
+# Mitigation Strategies
+
+To properly secure Content Security Policy implementations:
+
+• Restrict script sources to trusted domains only  
+• Avoid allowing large public CDNs when unnecessary  
+• Use nonce-based or hash-based CSP rules  
+• Disable JSONP endpoints or validate callback parameters  
+• Regularly audit CSP configurations
+
+---
+
+# Conclusion
+
+The DVWA CSP Bypass module demonstrates how different CSP configurations affect application security. While stricter policies can block certain attacks, misconfigurations such as allowing external scripts or insecure JSONP callbacks can still allow attackers to bypass CSP protections and execute malicious code.
+
+---
+
+# DVWA – JavaScript Attacks
+
+## Vulnerability Overview
+
+The **JavaScript Attacks** module in DVWA demonstrates why relying solely on **client-side JavaScript for security validation is unsafe**. Since JavaScript executes in the user's browser, an attacker can inspect, modify, or bypass the code using browser developer tools.
+
+Because of this, any validation logic implemented only in JavaScript can be manipulated. Attackers can change input values, bypass validation functions, or alter hidden form fields before the request is sent to the server.
+
+This module asks the user to submit the word **"success"** to complete the challenge. Different security levels attempt to protect this action using JavaScript logic and token mechanisms.
+
+However, since the logic remains client-side, these protections can still be bypassed.
+
+---
+
+# Security Level: Low
+
+## Payload Used
+
+success
+
+## Steps to Perform the Attack
+
+1. Navigate to **DVWA → JavaScript Attacks**.
+2. Set **DVWA Security Level → Low**.
+3. Locate the **Phrase input field** which contains the default value `ChangeMe`.
+4. Replace `ChangeMe` with the word **success**.
+5. Click **Submit**.
+
+## Result
+
+The application accepts the phrase and displays a success message confirming the challenge has been completed.
+
+## Screenshot
+
+![JavaScript Low](./Java_low.png)
+
+## Explanation
+
+At the Low security level, the application performs a simple check to see if the submitted phrase equals **"success"**. There are no additional validation mechanisms such as tokens, hashing, or verification logic. Because of this, the challenge can be solved by directly submitting the correct phrase.
+
+---
+
+# Security Level: Medium
+
+## Payload Used
+
+Phrase: success  
+Token generated using the page's JavaScript logic.
+
+## Steps to Perform the Attack
+
+1. Set **DVWA Security Level → Medium**.
+2. Open **Developer Tools (F12)** in the browser.
+3. Inspect the JavaScript file used by the page (`medium.js`).
+4. Analyze the token generation logic used to validate the form submission.
+5. Use the browser console to modify the phrase field or replicate the token generation logic.
+6. Submit the form.
+
+## Result
+
+The application accepts the request and displays the success message.
+
+## Screenshot
+
+![JavaScript Medium](./Java_medium.png)
+
+## Explanation
+
+At the Medium security level, the application attempts to improve security by introducing a **token generated using JavaScript logic**. The token is derived from the phrase entered in the input field.
+
+However, because the token generation logic exists entirely on the client side, attackers can inspect the JavaScript code and reproduce the same logic using browser developer tools. Once the correct token is generated, the attacker can submit a valid request and bypass the intended protection.
+
+---
+
+# Security Level: High
+
+## Payload Used
+
+Phrase manipulated using browser developer tools.
+
+## Steps to Perform the Attack
+
+1. Set **DVWA Security Level → High**.
+2. Open **Developer Tools (F12)**.
+3. Inspect the heavily obfuscated JavaScript code used by the page.
+4. Use the console to directly modify the phrase field:
+
+document.getElementById("phrase").value="success";
+
+5. Submit the form.
+
+## Result
+
+The application processes the request and displays the success message.
+
+## Screenshot
+
+![JavaScript High](./Java_high.png)
+
+## Explanation
+
+At the High security level, the application attempts to strengthen security by introducing **obfuscated JavaScript code and hashing logic**. The code is intentionally difficult to read in order to discourage reverse engineering.
+
+Despite this, the validation still occurs entirely on the client side. Since attackers have full control over the browser environment, they can manipulate the form fields directly using developer tools. Because the server trusts the values sent by the client, the protection mechanism can still be bypassed.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Protection Implemented | Weakness |
+|----------------|-----------------------|----------|
+| Low | Basic phrase validation | No security mechanisms |
+| Medium | JavaScript token generation | Token logic exposed in client-side code |
+| High | Obfuscated JavaScript hashing | Validation still occurs on the client side |
+
+---
+
+# Security Impact Analysis
+
+Client-side security mechanisms can be bypassed because attackers control the execution environment. This can lead to:
+
+- Manipulation of form inputs
+- Bypassing validation checks
+- Forging requests
+- Unauthorized access to protected functionality
+
+Applications that rely only on client-side validation are vulnerable to manipulation and exploitation.
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability relates to:
+
+**OWASP Top 10 2021 – A05: Security Misconfiguration**
+
+Improper reliance on client-side validation and failure to enforce security checks on the server side can expose applications to manipulation and bypass attacks.
+
+---
+
+# Mitigation Strategies
+
+To prevent this type of vulnerability:
+
+- Perform **all critical validation on the server side**
+- Never rely solely on JavaScript for security checks
+- Implement secure server-side token validation
+- Avoid trusting client-provided values
+- Use server-side authentication and verification mechanisms
+
+---
+
+# Conclusion
+
+The DVWA JavaScript Attacks module demonstrates the dangers of relying on client-side validation for security. Because attackers can inspect and manipulate JavaScript code within their browser, any protection implemented solely in the client can be bypassed.
+
+Proper security design requires that **all important validation and verification logic be enforced on the server side**, where attackers cannot manipulate the execution.
