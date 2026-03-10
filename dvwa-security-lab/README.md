@@ -344,7 +344,7 @@ The password was successfully changed when the URL was executed while logged in.
 
 ## Screenshot
 
-![CSRF Low](CSRF_Low.png)
+![CSRF Low](CSRF_High.png)
 
 ## Explanation (Why the Attack Works)
 
@@ -406,7 +406,7 @@ The attack failed and the application rejected the request.
 
 ## Screenshot
 
-![CSRF High](CSRF_High.png)
+![CSRF High](CSRF_LOW.png)
 
 ## Explanation
 
