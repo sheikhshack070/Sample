@@ -54,7 +54,7 @@ There were no restrictions on the number of login attempts, meaning multiple pas
 ## Screenshot
 
 ```
-BruteForceEasy.png
+![Brute Force Easy](./BruteForceEasy.png)
 ```
 
 
