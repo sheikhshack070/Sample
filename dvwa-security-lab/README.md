@@ -1844,3 +1844,173 @@ To prevent this type of vulnerability:
 The DVWA JavaScript Attacks module demonstrates the dangers of relying on client-side validation for security. Because attackers can inspect and manipulate JavaScript code within their browser, any protection implemented solely in the client can be bypassed.
 
 Proper security design requires that **all important validation and verification logic be enforced on the server side**, where attackers cannot manipulate the execution.
+
+---
+
+# DVWA – File Inclusion
+
+## Vulnerability Overview
+
+File Inclusion vulnerabilities occur when an application dynamically loads files based on user input without proper validation. Attackers can manipulate the file path to include unintended files from the system.
+
+There are two main types of file inclusion vulnerabilities:
+
+- **Local File Inclusion (LFI)** – including files that already exist on the server.
+- **Remote File Inclusion (RFI)** – including files hosted on a remote server.
+
+The DVWA File Inclusion module demonstrates how improper validation of the `page` parameter can allow attackers to perform directory traversal and include sensitive files.
+
+---
+
+# Security Level: Low
+
+## Payload Used
+
+../../../../etc/passwd
+
+## Steps to Perform the Attack
+
+1. Navigate to **DVWA → File Inclusion**.
+2. Set **DVWA Security Level → Low**.
+3. Click **file1.php** to generate the URL parameter.
+4. The URL becomes:
+
+http://localhost:8080/vulnerabilities/fi/?page=file1.php
+
+5. Replace the parameter with:
+
+../../../../etc/passwd
+
+6. Final URL:
+
+http://localhost:8080/vulnerabilities/fi/?page=../../../../etc/passwd
+
+7. Press **Enter**.
+
+## Result
+
+The server displays the contents of the `/etc/passwd` file, confirming a successful Local File Inclusion attack.
+
+Example output:
+
+root:x:0:0:root:/root:/bin/bash  
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+
+## Screenshot
+
+![File Inclusion Low](./FileInclusion_low.png)
+
+## Explanation
+
+At the Low security level, the application directly includes the file specified in the `page` parameter without validating the input. Attackers can use directory traversal (`../`) to access sensitive files on the system.
+
+---
+
+# Security Level: Medium
+
+## Payload Attempted
+
+../../../../etc/passwd
+
+## Steps Performed
+
+1. Navigate to **DVWA → File Inclusion**.
+2. Set **DVWA Security Level → Medium**.
+3. Click **file1.php** to generate the URL parameter.
+4. Replace the parameter with:
+
+../../../../etc/passwd
+
+5. Press **Enter**.
+
+## Result
+
+The payload did **not successfully include `/etc/passwd`** in this environment.
+
+## Screenshot
+
+![File Inclusion Medium](./FileInclusion_medium.png)
+
+## Explanation
+
+At the Medium security level, DVWA introduces filtering mechanisms to prevent directory traversal attacks. In this environment, the payload used for directory traversal did not bypass the protection and the Local File Inclusion attempt failed.
+
+---
+
+# Security Level: High
+
+## Payload Used
+
+../../phpinfo.php
+
+## Steps to Perform the Attack
+
+1. Navigate to **DVWA → File Inclusion**.
+2. Set **DVWA Security Level → High**.
+3. Click **file1.php** to generate the URL parameter.
+4. Replace the parameter with:
+
+../../phpinfo.php
+
+5. Final URL:
+
+http://localhost:8080/vulnerabilities/fi/?page=../../phpinfo.php
+
+6. Press **Enter**.
+
+## Result
+
+The application loads the **PHP Info page**, showing details such as:
+
+- PHP Version
+- Loaded modules
+- Server configuration
+- Environment variables
+
+## Screenshot
+
+![File Inclusion High](./FileInclusion_high.png)
+
+## Explanation
+
+At the High security level, the application attempts to restrict file inclusion but still allows relative paths within the application directory. By using directory traversal, an attacker can access files such as `phpinfo.php` located in the DVWA root directory. This demonstrates that the application is still vulnerable to Local File Inclusion within the application's file structure.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Protection Implemented | Result |
+|----------------|------------------------|--------|
+| Low | No input validation | LFI successful |
+| Medium | Partial filtering | Payload failed in this environment |
+| High | Restricted file inclusion | LFI possible within application directory |
+
+---
+
+# Security Impact
+
+File Inclusion vulnerabilities can allow attackers to:
+
+- Read sensitive system files
+- Access configuration files
+- Expose server configuration
+- Execute malicious code
+- Escalate privileges
+
+---
+
+# Mitigation Strategies
+
+To prevent File Inclusion vulnerabilities:
+
+- Use strict whitelisting of allowed files
+- Avoid including files directly based on user input
+- Validate and sanitize all input parameters
+- Disable `allow_url_include` in PHP configuration
+- Implement secure routing instead of dynamic file inclusion
+
+---
+
+# Conclusion
+
+The DVWA File Inclusion module demonstrates how improper handling of file paths can expose applications to Local File Inclusion vulnerabilities. While the Low security level is fully vulnerable and the Medium level adds partial protection, the High level still allows inclusion of files within the application directory, showing that incomplete validation can still lead to security risks.
