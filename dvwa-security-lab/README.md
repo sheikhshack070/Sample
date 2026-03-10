@@ -1117,7 +1117,7 @@ A JavaScript alert popup appears displaying **XSS**, confirming successful scrip
 
 ### Screenshot
 
-![DOM Low](screenshots/DOM_Low.png)
+![DOM Low](./DOM_Low.png)
 
 ### Explanation
 
@@ -1144,7 +1144,7 @@ A JavaScript alert popup appears again.
 
 ### Screenshot
 
-![DOM Medium](screenshots/DOM_Medium.png)
+![DOM Medium](./DOM_Medium.png)
 
 ### Explanation
 
@@ -1172,7 +1172,7 @@ A JavaScript alert popup appears displaying **1**, confirming the script execute
 
 ### Screenshot
 
-![DOM High](screenshots/DOM_High.png)
+![DOM High](./DOM_High.png)
 
 ### Explanation
 
