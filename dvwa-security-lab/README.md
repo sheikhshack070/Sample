@@ -1378,3 +1378,155 @@ To prevent reflected XSS vulnerabilities:
 # Conclusion
 
 The DVWA Reflected XSS module demonstrates how improper handling of user input can lead to script execution in the browser. Even when some filtering mechanisms are introduced, incomplete sanitization can still allow attackers to bypass protections and exploit the vulnerability.
+
+---
+
+# Stored Cross-Site Scripting (XSS)
+
+## Vulnerability Overview
+
+Stored Cross-Site Scripting (Stored XSS) occurs when malicious user input is permanently stored on the server (such as in a database, comment system, or guestbook). Whenever the stored content is viewed by users, the malicious script executes in their browser.
+
+Unlike Reflected XSS, where the payload must be delivered in each request, Stored XSS persists on the server and automatically affects every user who visits the affected page.
+
+In DVWA, the Stored XSS vulnerability exists in the **Guestbook feature**, where input from the **Name** or **Message** fields is saved in the database and displayed back to users without proper sanitization.
+
+---
+
+# Security Level: Low
+
+### Payload Used
+
+<script>alert('XSS')</script>
+
+### Steps to Perform the Attack
+
+1. Navigate to **XSS (Stored)** in DVWA.
+2. Set **DVWA Security Level → Low**.
+3. Enter the following values:
+
+Name: test  
+Message: `<script>alert('XSS')</script>`
+
+4. Click **Sign Guestbook**.
+
+### Result
+
+A JavaScript alert popup appears displaying **XSS**. Every time the page reloads, the alert appears again because the malicious script is stored in the database.
+
+### Screenshot
+
+![Stored Low](./Stored_low.png)
+
+### Explanation
+
+At Low security level, DVWA does not perform any validation or filtering on user input. The message is stored directly in the database and inserted into the webpage without sanitization, allowing arbitrary JavaScript execution.
+
+---
+
+# Security Level: Medium
+
+### Payload Used
+
+<img src=x onerror=alert('XSS')>
+
+### Steps to Perform the Attack
+
+1. Change **DVWA Security Level → Medium**.
+2. Navigate again to **XSS (Stored)**.
+3. Enter the payload in the **Message field**.
+4. Click **Sign Guestbook**.
+
+### Result
+
+A JavaScript alert popup appears again, demonstrating that the stored payload executes successfully.
+
+### Screenshot
+
+![Stored Medium](./Stored_medium.png)
+
+### Explanation
+
+At Medium security level, DVWA attempts to block `<script>` tags but does not properly sanitize other HTML elements or event handlers. By using an image element with an `onerror` event handler, attackers can bypass the filtering mechanism and execute JavaScript.
+
+---
+
+# Security Level: High
+
+### Payload Used
+
+<img src=x onerror=alert(1)>
+
+### Steps to Perform the Attack
+
+1. Change **DVWA Security Level → High**.
+2. Navigate to **XSS (Stored)**.
+3. Enter the payload in the **Name field**.
+4. Enter a normal message such as `test`.
+5. Click **Sign Guestbook**.
+
+### Result
+
+A JavaScript alert popup displaying **1** appears when the page reloads, confirming successful execution of the stored XSS payload.
+
+### Screenshot
+
+![Stored High](./Stored_high.png)
+
+### Explanation
+
+At High security level, DVWA performs stronger filtering on the **Message field**, but the **Name field remains vulnerable**. Because the application does not properly sanitize the Name value before displaying it on the page, attackers can inject JavaScript through this field. Since the data is stored in the database, the malicious script executes whenever the guestbook page loads.
+
+---
+
+# Security Level Comparison
+
+| Security Level | Filtering Mechanism | Payload Used | Result |
+|----------------|--------------------|-------------|--------|
+| Low | No filtering | `<script>alert('XSS')</script>` | Successful |
+| Medium | Script tag filtering | `<img src=x onerror=alert('XSS')>` | Successful |
+| High | Stronger filtering on Message field but Name remains vulnerable | `<img src=x onerror=alert(1)>` | Successful |
+
+---
+
+# OWASP Top 10 Mapping
+
+This vulnerability maps to:
+
+**OWASP Top 10 2021 — A03: Injection**
+
+Cross-Site Scripting (XSS) falls under injection vulnerabilities because untrusted input is interpreted as executable code by the browser.
+
+---
+
+# Security Impact Analysis
+
+Stored XSS vulnerabilities are particularly dangerous because the malicious payload is permanently stored on the server and automatically delivered to every user who views the affected page.
+
+Potential impacts include:
+
+• Session hijacking  
+• Cookie theft  
+• Account takeover  
+• Phishing attacks  
+• Website defacement  
+• Redirection to malicious websites  
+• Malware delivery
+
+---
+
+# Mitigation Strategies
+
+To prevent Stored XSS vulnerabilities:
+
+• Validate and sanitize all user inputs  
+• Encode output before displaying it in HTML  
+• Implement Content Security Policy (CSP)  
+• Use frameworks that automatically escape user input  
+• Avoid directly inserting untrusted input into the DOM
+
+---
+
+# Conclusion
+
+The DVWA Stored XSS module demonstrates how improperly sanitized user input stored in a database can lead to persistent script execution in users’ browsers. Even when filtering mechanisms are applied, incomplete sanitization allows attackers to bypass protections and exploit the vulnerability.
