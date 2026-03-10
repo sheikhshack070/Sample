@@ -95,11 +95,7 @@ The login still succeeds when the correct password is entered, but the system in
 
 ## Screenshot
 
-```
-screenshots/bruteforce_medium.png
-```
-
-*(Insert screenshot of the login attempt)*
+![Brute Force Medium](./BruteForceMedium.png)
 
 ---
 
@@ -145,11 +141,8 @@ At the High security level, the brute force attack becomes more difficult due to
 
 ## Screenshot
 
-```
-screenshots/bruteforce_high.png
-```
+![Brute Force Hard](./BruteForceHard.png)
 
-*(Insert screenshot showing the login page with security controls)*
 
 ---
 
@@ -220,7 +213,7 @@ The application executed both the ping command and the injected `ls` command. Th
 
 ## Screenshot
 
-![Command Injection Low](screenshots/command_low.png)
+![Command Injection Low](CI_Easy.png)
 
 ## Explanation (Why it Worked)
 
@@ -252,7 +245,7 @@ The application executed the injected command and displayed the output of the `l
 
 ## Screenshot
 
-![Command Injection Medium](screenshots/command_medium.png)
+![Command Injection medium](CI_medium.png)
 
 ## Explanation (Why it Worked)
 
@@ -280,7 +273,7 @@ The command injection was still successful and returned the username of the proc
 
 ## Screenshot
 
-![Command Injection High](screenshots/command_high.png)
+![Command Injection High](CI_High.png)
 
 ## Explanation (Why it Worked)
 
